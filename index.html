@@ -549,17 +549,45 @@
 
 	<script>
 
-		const res = JSON.parse(localStorage.getItem('templateDate'));
+			function getTemplateData() {
+				const fallback = {
+					backgroundImg: '',
+					opacity: 100,
+					mainTitle: '',
+					content: '新春快乐，万事顺遂！',
+					skip: 1,
+					nextContent: '倒计时还有'
+				};
+
+				try {
+					const raw = localStorage.getItem('templateDate');
+					if (!raw) {
+						return fallback;
+					}
+
+					const parsed = JSON.parse(raw);
+					if (!parsed || !parsed.data) {
+						return fallback;
+					}
+
+					return Object.assign({}, fallback, parsed.data);
+				} catch (error) {
+					console.warn('templateDate 解析失败，已使用默认文案。', error);
+					return fallback;
+				}
+			}
+
+			const templateData = getTemplateData();
 
 		var id = "282593";
 		var data_type = "1";
 
 
 
-		if (res.data.backgroundImg) {
-			$("#main-canvas").css('background', "url('" + res.data.backgroundImg + "') repeat");
+		if (templateData.backgroundImg) {
+			$("#main-canvas").css('background', "url('" + templateData.backgroundImg + "') repeat");
 			$("#main-canvas").css('background-size', "100%");
-			$("#main-canvas").css('opacity', res.data.opacity ? res.data.opacity/100 : 0);
+			$("#main-canvas").css('opacity', templateData.opacity ? templateData.opacity/100 : 0);
 		}
 
 		function musicPlay(isPlay) {
@@ -581,7 +609,7 @@
 			$('.page_two').removeClass('hide');
 		}
 		function timeOut(){
-		    var starttime = new Date(res.data.mainTitle);
+		    var starttime = new Date(templateData.mainTitle);
             setInterval(function () {
                 var nowtime = new Date();
                 var time = starttime - nowtime;
@@ -599,9 +627,9 @@
 		
 		function start() {
 
-			let str = res.data.content.replaceAll('\n', '#');//"ʸᵒᵘ ᵃʳᵉ ᵗʰᵉ ᵒⁿˡʸ ᵇᵉˢᵗ ᶠᵒʳ ᵐᵉ.<br><br>于我而言，你是最好且是唯一"
-			if(res.data.skip == 2){
-			    var starttime = new Date(res.data.mainTitle);
+			let str = templateData.content.replaceAll('\n', '#');//"ʸᵒᵘ ᵃʳᵉ ᵗʰᵉ ᵒⁿˡʸ ᵇᵉˢᵗ ᶠᵒʳ ᵐᵉ.<br><br>于我而言，你是最好且是唯一"
+			if(templateData.skip == 2){
+			    var starttime = new Date(templateData.mainTitle);
                 var nowtime = new Date();
                 var time = starttime - nowtime;
                 var day = parseInt(time / 1000 / 60 / 60 / 24);
@@ -609,7 +637,7 @@
                 var minute = parseInt(time / 1000 / 60 % 60);
                 var seconds = parseInt(time / 1000 % 60);
                 var sydate =day + "天" + hour + "小时" + minute + "分钟"//+ seconds + "秒";
-			    str = res.data.nextContent.replaceAll('倒计时还有', '倒计时还有@' + sydate + '^') + '#' + str
+			    str = templateData.nextContent.replaceAll('倒计时还有', '倒计时还有@' + sydate + '^') + '#' + str
 			}
 			console.log('1111')
 			console.log(str)
@@ -657,9 +685,12 @@
 			}, 100)
 		}
 
-		$(function () {
-			$.get("/api/readOnce?id=282593&type=" + data_type);
-		});
+			$(function () {
+				if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+					return;
+				}
+				$.get("/api/readOnce?id=282593&type=" + data_type);
+			});
 	</script>
 
 
