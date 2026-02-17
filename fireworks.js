@@ -1150,6 +1150,14 @@ function startSequence() {
 
 
 function handlePointerStart(event) {
+	const canvasRect = mainStage.canvas.getBoundingClientRect();
+	const clientX = canvasRect.left + event.x;
+	const clientY = canvasRect.top + event.y;
+	const target = document.elementFromPoint(clientX, clientY);
+	if (target && target.closest('#settingsDock')) {
+		return;
+	}
+
 	const btnSize = 50;
 	
 	if (event.y < btnSize) {
