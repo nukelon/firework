@@ -26,6 +26,7 @@ const GRAVITY = 0.9; // Acceleration in px/s
 let simSpeed = 1;
 let launchFrequencyMultiplier = 1;
 let manualLaunchEnabled = true;
+const DEFAULT_AUTO_LAUNCH_SPEED_MULTIPLIER = 1.5;
 
 function setSimulationSpeed(value) {
 	const nextSpeed = Number(value);
@@ -915,13 +916,13 @@ function getRandomShellSize() {
 // Launches a shell from a user pointer event, based on state.config
 function launchShellFromConfig(event) {
 	const shell = new Shell(shellFromConfig(shellSizeSelector()));
-	const w = mainStage.width;
-	const h = mainStage.height;
-	
-	shell.launch(
-		event ? event.x / w : getRandomShellPositionH(),
-		event ? 1 - event.y / h : getRandomShellPositionV()
-	);
+
+	if (event) {
+		shell.launchTo(event.x, event.y);
+		return;
+	}
+
+	shell.launch(getRandomShellPositionH(), getRandomShellPositionV());
 }
 
 
@@ -1236,7 +1237,7 @@ function updateGlobals(timeStep, lag) {
 	
 	// auto launch shells
 	if (store.state.config.autoLaunch && launchFrequencyMultiplier > 0) {
-		autoLaunchTime -= timeStep * launchFrequencyMultiplier;
+		autoLaunchTime -= timeStep * DEFAULT_AUTO_LAUNCH_SPEED_MULTIPLIER * launchFrequencyMultiplier;
 		if (autoLaunchTime <= 0) {
 			autoLaunchTime = startSequence() * 1.25;
 		}
@@ -1690,7 +1691,21 @@ class Shell {
 		const launchX = position * (width - hpad * 2) + hpad;
 		const launchY = height;
 		const burstY = minHeight - (launchHeight * (minHeight - vpad));
-		
+
+		this._launchComet(launchX, launchY, burstY);
+	}
+
+	launchTo(x, y) {
+		const width = stageW;
+		const height = stageH;
+		const launchX = Math.max(0, Math.min(x, width));
+		const launchY = height;
+		const burstY = Math.max(0, Math.min(y, height));
+
+		this._launchComet(launchX, launchY, burstY);
+	}
+
+	_launchComet(launchX, launchY, burstY) {
 		const launchDistance = launchY - burstY;
 		// Using a custom power curve to approximate Vi needed to reach launchDistance under gravity and air drag.
 		// Magic numbers came from testing.
