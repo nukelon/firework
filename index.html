@@ -34,18 +34,13 @@
 		content="#000000">
 	<meta name="msapplication-TileImage"
 		content="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
-	<link href="1.css"
+	<link href="styles.css"
 		rel="stylesheet">
 	<script src="jquery.min.js"
 		type="text/javascript"></script>
 </head>
 
 <body>
-
-	<audio id="audio_music"
-		src="https://sf6-cdn-tos.douyinstatic.com/obj/tos-cn-ve-2774/430d83be45af4abc8b0708691f9cd387"
-		preload="auto"
-		loop="loop"></audio>
 
 	<!-- 1. 中间层：背景图片层 (z-index: 400) -->
 	<div id="newYearBg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:400;display:none;opacity:0;transition:opacity 2s ease;background:#000;">
@@ -234,7 +229,6 @@
 		function handleGiftModalClose() {
 			var modal = document.getElementById('giftModal');
 			var bg = document.getElementById('newYearBg');
-			var audio = document.getElementById('gift_audio');
 			var floatBalls = document.getElementById('floatBalls');
 
 			window.isImageBackground = true;
@@ -275,11 +269,6 @@
 					setTimeout(() => bg.style.opacity = '1', 100);
 				}
 			}, 500);
-
-			// 1秒后播放音频
-			setTimeout(() => {
-				if (audio) audio.play().catch(e => console.log('音频播放需要用户交互'));
-			}, 1000);
 
 			// 2.5秒后启动烟花
 			setTimeout(() => {
@@ -480,9 +469,9 @@
 	</div>
 
 	<!-- partial -->
-	<script src="2.js"></script>
-	<script src="3.js"></script>
-	<script src="script.js"></script>
+	<script src="fscreen.js"></script>
+	<script src="stage.js"></script>
+	<script src="fireworks.js"></script>
 	<script>
 		const MyMath = (function MyMathFactory(Math) {
 
@@ -590,20 +579,6 @@
 			$("#main-canvas").css('opacity', templateData.opacity ? templateData.opacity/100 : 0);
 		}
 
-		function musicPlay(isPlay) {
-			var media = document.querySelector('#audio_music');
-			if (isPlay && media.paused) {
-				media.play();
-			}
-			if (!isPlay && !media.paused) {
-				media.pause();
-			}
-		}
-		function musicInBrowserHandler() {
-			setTimeout(function () {
-				musicPlay(true)
-			}, 0)
-		}
 		function fireworks() {
 			$('.page_one').addClass('hide');
 			$('.page_two').removeClass('hide');
