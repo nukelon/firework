@@ -4,15 +4,6 @@
 <head>
 	<meta http-equiv="Content-Type"
 		content="text/html; charset=UTF-8">
-		<script>
-			var _czc = _czc || [];
-			(function () {
-				var um = document.createElement("script");
-				um.src = "https://v1.cnzz.com/z.js?id=1281334347&async=1";
-				var s = document.getElementsByTagName("script")[0];
-				s.parentNode.insertBefore(um, s);
-			})();
-			</script>
 	<title>春节快乐</title>
 	<meta name="viewport"
 		content="width=device-width, initial-scale=1, user-scalable=no">
@@ -42,21 +33,10 @@
 
 <body>
 
-	<!-- 1. 中间层：背景图片层 (z-index: 400) -->
-	<div id="newYearBg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:400;display:none;opacity:0;transition:opacity 2s ease;background:#000;">
-		<img src="2.png" style="width:100%;height:100%;object-fit:cover;display:block;">
-	</div>
+	<div id="adaptiveBg" aria-hidden="true"></div>
 
 	<!-- 音频播放器 -->
 	<audio id="gift_audio" src="https://lf3-music-east.douyinstatic.com/obj/ies-music-hj/7585134800709684017.mp3" preload="auto"></audio>
-
-	<!-- 右下角透明小球 (z-index: 9000) -->
-	<div id="floatBalls" class="float-balls-container">
-		<a href="weixin://dl/business/?appid=wx2e4f9bd7460719b7&path=pages/index/index" target="_blank" class="float-ball">
-			<span>更多</span>
-		</a >
-
-	</div>
 
 
 	<!-- 3. 最高层：轻奢莫兰迪·精致礼盒弹窗 (z-index: 10000) -->
@@ -163,46 +143,6 @@
 		.canvas-container canvas { background: transparent !important; background-color: transparent !important; }
 
 		/* 右下角透明小球样式 */
-		.float-balls-container {
-			position: fixed; right: 30px; bottom: 30px;
-			display: none; flex-direction: column; gap: 15px; z-index: 9000;
-		}
-		.float-balls-container.show { display: flex; }
-		
-		.float-ball {
-			width: 40px; height: 40px; border-radius: 50%;
-			background: rgba(230, 230, 230, 0.7);
-			backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-			border: 2px solid rgba(180, 180, 180, 0.8);
-			display: flex; align-items: center; justify-content: center;
-			cursor: pointer; text-decoration: none; transition: 0.3s;
-			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-		}
-		.float-ball span { color: #1a1a1a; font-size: 12px; font-weight: 600; }
-		.float-ball:hover {
-			background: rgba(230, 230, 230, 0.85);
-			border-color: rgba(160, 160, 160, 0.9);
-			transform: scale(1.1);
-			box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-		}
-		.float-ball:active { transform: scale(0.95); }
-
-		/* 小球弹跳出现动画 */
-		.float-balls-container.show .float-ball {
-			animation: ballBounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-		}
-		.float-balls-container.show .float-ball:nth-child(2) { animation-delay: 0.15s; }
-
-		@keyframes ballBounceIn {
-			0% { opacity: 0; transform: scale(0) translateX(100px); }
-			60% { opacity: 1; transform: scale(1.15) translateX(0); }
-			80% { transform: scale(0.9) translateX(0); }
-			100% { opacity: 1; transform: scale(1) translateX(0); }
-		}
-
-		@media (max-width: 640px) {
-			.float-balls-container { right: 20px; bottom: 20px; gap: 10px; }
-		}
 	</style>
 
 	<script>
@@ -228,8 +168,7 @@
 
 		function handleGiftModalClose() {
 			var modal = document.getElementById('giftModal');
-			var bg = document.getElementById('newYearBg');
-			var floatBalls = document.getElementById('floatBalls');
+			var bg = document.getElementById('adaptiveBg');
 
 			window.isImageBackground = true;
 
@@ -240,9 +179,6 @@
 			});
 
 			// 立即显示背景图片层（但透明度为0），利用它的黑色背景覆盖下层，避免闪白
-			if (bg) {
-				bg.style.display = 'block';
-			}
 
 			// 像揭开序幕一样消失
 			modal.style.transition = 'all 0.8s cubic-bezier(0.22, 1, 0.36, 1)';
@@ -250,12 +186,6 @@
 			modal.style.transform = 'translateY(-30px) scale(1.02)';
 			setTimeout(() => modal.remove(), 800);
 
-			// 0.8秒后显示右下角小球（在弹窗完全消失后）
-			setTimeout(() => {
-				if (floatBalls) {
-					floatBalls.classList.add('show');
-				}
-			}, 800);
 
 			// 立即开始：将 html 和 body 背景从淡灰白过渡到黑色
 			document.documentElement.style.transition = 'background-color 1s ease';
@@ -669,6 +599,75 @@
 	</script>
 
 
+
+	<div id="settingsDock" class="settings-dock">
+		<button id="settingsToggle" class="settings-toggle" type="button" aria-label="打开设置" aria-expanded="false">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-settings" xlink:href="#icon-settings"></use></svg>
+		</button>
+		<div id="settingsPanel" class="settings-panel" role="dialog" aria-label="烟花设置">
+			<label>
+				<span>速度 <em id="speedValue">1.0×</em></span>
+				<input id="speedSlider" type="range" min="0.1" max="4" step="0.1" value="1">
+			</label>
+			<label>
+				<span>烟花发射频率 <em id="freqValue">1.0×</em></span>
+				<input id="freqSlider" type="range" min="0" max="4" step="0.1" value="1">
+			</label>
+			<label class="switch-row">
+				<span>可手动发射烟花</span>
+				<input id="manualToggle" type="checkbox" checked>
+			</label>
+		</div>
+	</div>
+
+	<script>
+		(function(){
+			var dock = document.getElementById('settingsDock');
+			var toggleBtn = document.getElementById('settingsToggle');
+			var panel = document.getElementById('settingsPanel');
+			var speedSlider = document.getElementById('speedSlider');
+			var freqSlider = document.getElementById('freqSlider');
+			var manualToggle = document.getElementById('manualToggle');
+			var speedValue = document.getElementById('speedValue');
+			var freqValue = document.getElementById('freqValue');
+
+			function setOpen(next){
+				dock.classList.toggle('open', !!next);
+				toggleBtn.setAttribute('aria-expanded', next ? 'true' : 'false');
+			}
+
+			toggleBtn.addEventListener('click', function(e){
+				e.stopPropagation();
+				setOpen(!dock.classList.contains('open'));
+			});
+
+			document.addEventListener('pointerdown', function(e){
+				if (!dock.contains(e.target)) setOpen(false);
+			});
+
+			function updateReadout(node, value){
+				node.textContent = Number(value).toFixed(1) + '×';
+			}
+
+			speedSlider.addEventListener('input', function(){
+				updateReadout(speedValue, speedSlider.value);
+				if (window.fireworkSettings) window.fireworkSettings.setSimulationSpeed(speedSlider.value);
+			});
+
+			freqSlider.addEventListener('input', function(){
+				updateReadout(freqValue, freqSlider.value);
+				if (window.fireworkSettings) window.fireworkSettings.setLaunchFrequency(freqSlider.value);
+			});
+
+			manualToggle.addEventListener('change', function(){
+				if (window.fireworkSettings) window.fireworkSettings.setManualLaunch(manualToggle.checked);
+			});
+
+
+			updateReadout(speedValue, speedSlider.value);
+			updateReadout(freqValue, freqSlider.value);
+		})();
+	</script>
 
 </body>
 
